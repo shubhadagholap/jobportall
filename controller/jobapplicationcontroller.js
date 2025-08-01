@@ -51,6 +51,22 @@ export const getapplicationsoflogineduser=async(req,res)=>{
         return res.status(500).json({error:'internal server error'+error.message});
     }
 }
+export const getapplicationofparticularjob=async(req,res)=>{
+    try {
+        let jobid=req.params.jobid;
+        if(!jobid){
+            return res.status(400).json({error:"jobid missing in params"})
+        }
+        let job=await jobmodel.findById(jobid)
+        if(!job){
+            return res.status(404).json({error:"job not found"})
+        }
+        const applications=await jobsapplicationmodel.find({jobid:jobid}).populate('jobid').populate('userid');
+        return res.status(200).json({message:"applications fetched successfully",applications:applications})
+    } catch (error) {
+        return res.status(500).json({error:'internal server error'+error.message});
+    }
+}
 export const updateapplication=async (req,res)=>{
     try {
            let id=req.params.id;
