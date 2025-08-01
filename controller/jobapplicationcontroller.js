@@ -1,3 +1,4 @@
+import { application } from "express";
 import jobsapplicationmodel from "../models/jobsapplication.js";
 import jobmodel from "../models/jobsmodel.js";
 import usermodel from "../models/usermodel.js";
@@ -49,4 +50,36 @@ export const getapplicationsoflogineduser=async(req,res)=>{
     } catch (error) {
         return res.status(500).json({error:'internal server error'+error.message});
     }
+}
+export const updateapplication=async (req,res)=>{
+    try {
+           let id=req.params.id;
+           if(!id){
+            return res.status(400).json({error:'id is required'});
+           }
+        
+          let updateapplication= await jobsapplicationmodel.findByIdAndUpdate(id,req.body);//old data not exist means null
+          if(!updateapplication){
+            return res.status(404).json({error:"application not found updated failed"})
+          }
+          return res.status(200).json({message:"application  updated successfully",application:updateapplication})
+    } catch (error) {
+          return res.status(500).json({error:"internal server error"+error})
+    }
+}
+export const deleteapplication=async(req,res)=>{
+   try {
+     const id=req.params.id;
+     if(!id){
+         return res.status(400).json({error:'id is required'});
+     }
+     let deleteapplication=await jobsapplicationmodel.findByIdAndDelete(id);
+     if(!deleteapplication){
+        return res.status(404).json({error:"application not found deleted failed"})
+     }
+
+     return res.status(200).json({message:"application deleted successfully",application:deleteapplication})
+   } catch (error) {
+        return res.status(500).json({error:"internal server error"+error})
+   }
 }
